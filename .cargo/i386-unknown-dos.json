@@ -1,0 +1,31 @@
+{
+    "arch": "x86",
+    "cpu": "i386",
+    "vendor": "unknown",
+    "os": "dos",
+    "llvm-target": "i386-unknown-none-code16",
+    "data-layout": "e-m:e-p:32:32-p270:32:32-p271:32:32-p272:64:64-i128:128-f64:32:64-f80:32-n8:16:32-S128",
+    "target-pointer-width": 32,
+    "code-model": "small",
+    "executables": true,
+    "exe-suffix": ".com",
+    "dynamic-linking": false,
+    "relocation-model": "static",
+    "disable-redzone": true,
+    "target-endian": "little",
+    "linker": "rust-lld",
+    "linker-flavor": "ld.lld",
+    "linker-is-gnu": true,
+    "panic-strategy": "abort",
+    "position-independent-executables": false,
+    "asm-args": [
+        "-m16"
+    ],
+    "pre-link-args": {
+        "ld.lld": [
+            "-nostdlib",
+            "-T.cargo/i386-unknown-dos.ld",
+            "target/i386-unknown-dos/release/libdos_rt.a"
+        ]
+    }
+}
