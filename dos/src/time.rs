@@ -76,31 +76,49 @@ impl Instant {
         Self { ticks: unsafe { OFFSET } + now as u64 }
     }
 
+    /// Returns the amount of time elapsed from another instant to this one,
+    /// or zero duration if that instant is later than this one.
     #[must_use]
     pub fn duration_since(&self, earlier: Self) -> Duration {
         self.checked_duration_since(earlier).unwrap_or_default()
     }
 
+    /// Returns the amount of time elapsed from another instant to this one,
+    /// or None if that instant is later than this one.
+    ///
+    /// Due to [monotonicity bugs], even under correct logical ordering of the passed [`Instant`]s,
+    /// this method can return [`None`].
+    ///
+    /// [monotonicity bugs]: Instant#monotonicity
     #[must_use]
     pub fn checked_duration_since(&self, earlier: Self) -> Option<Duration> {
         self.ticks.checked_sub(earlier.ticks).map(|ticks| Duration::new(ticks / 18, ((ticks % 18) * 55_000_000) as u32))
     }
 
+    /// Returns the amount of time elapsed from another [`Instant`] to this one,
+    /// or zero [`Duration`] if that [`Instant`] is later than this one.
     #[must_use]
     pub fn saturating_duration_since(&self, earlier: Self) -> Duration {
         self.checked_duration_since(earlier).unwrap_or_default()
     }
 
+    /// Returns the amount of time elapsed since this [`Instant`].
     #[must_use]
     pub fn elapsed(&self) -> Duration {
         Self::now() - *self
     }
 
+    /// Returns `Some(t)` where `t` is the time `self + duration` if `t` can be represented as
+    /// [`Instant`] (which means it's inside the bounds of the underlying data structure), [`None`]
+    /// otherwise.
     pub fn checked_add(&self, duration: Duration) -> Option<Self> {
         let ticks = duration.as_secs().saturating_mul(18) + (duration.subsec_nanos() as u64 / 55_000_000);
         self.ticks.checked_add(ticks).map(|ticks| Self { ticks })
     }
 
+    /// Returns `Some(t)` where `t` is the time `self - duration` if `t` can be represented as
+    /// `Instant` (which means it's inside the bounds of the underlying data structure), [`None`]
+    /// otherwise.
     pub fn checked_sub(&self, duration: Duration) -> Option<Self> {
         let ticks = duration.as_secs().saturating_mul(18) + (duration.subsec_nanos() as u64 / 55_000_000);
         self.ticks.checked_sub(ticks).map(|ticks| Self { ticks })
@@ -110,6 +128,10 @@ impl Instant {
 impl Add<Duration> for Instant {
     type Output = Self;
 
+    /// # Panics
+    ///
+    /// This function may panic if the resulting point in time cannot be represented by the
+    /// underlying data structure. See [`Instant::checked_add`] for a version without panic.
     fn add(self, rhs: Duration) -> Self::Output {
         self.checked_add(rhs).expect("overflow when adding duration to instant")
     }
