@@ -1,6 +1,6 @@
 [workspace]
 resolver = "3"
-members = ["std", "dos_rt", "dos"]
+members = ["std", "dos_rt", "dos", "bios"]
 
 [workspace.package]
 edition = "2024"

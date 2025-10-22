@@ -2,7 +2,7 @@
 
 use core::marker::PhantomData;
 
-pub mod bios;
+pub mod fs;
 pub mod time;
 
 #[repr(C, packed)]

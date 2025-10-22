@@ -64,7 +64,7 @@ impl Instant {
     /// ```
     #[must_use]
     pub fn now() -> Self {
-        let now = crate::bios::rtc_ticks();
+        let now = bios::rtc::ticks();
 
         if now < unsafe { TICKS } {
             unsafe { OFFSET = OFFSET.wrapping_add(0x1800B0) }
