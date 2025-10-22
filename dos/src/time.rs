@@ -1,8 +1,10 @@
-use core::arch::asm;
 use core::ops::{Add, AddAssign, Sub, SubAssign};
 use core::time::Duration;
 
+/// Last observed BIOS tick.
 static mut TICKS: u32 = 0;
+
+/// Cumulative tick offset to extend the [`u32`] BIOS tick counter to [`u64`].
 static mut OFFSET: u64 = 0;
 
 /// A measurement of a monotonically nondecreasing clock.
@@ -62,10 +64,7 @@ impl Instant {
     /// ```
     #[must_use]
     pub fn now() -> Self {
-        let (hi, lo): (u16, u16);
-        unsafe { asm!("int 0x1A", in("ah") 0u8, lateout("cx") hi, lateout("dx") lo, options(nomem, nostack)) };
-
-        let now = (hi as u32) << 16 | lo as u32;
+        let now = crate::bios::rtc_ticks();
 
         if now < unsafe { TICKS } {
             unsafe { OFFSET = OFFSET.wrapping_add(0x1800B0) }
