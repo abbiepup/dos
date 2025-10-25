@@ -12,15 +12,15 @@ unsafe extern "C" {
 
 #[unsafe(naked)]
 #[unsafe(no_mangle)]
-#[unsafe(link_section = ".rt")]
+// #[unsafe(link_section = ".rt")]
 extern "C" fn _start() -> ! {
     core::arch::naked_asm! {
         // Zero bss.
-        "mov di, offset {__bss_start}",
-        "mov cx, {__bss_size}",
-        "shr cx, 1",
-        "xor ax, ax",
-        "rep stosw",
+        "mov edi, offset {__bss_start}",
+        "mov ecx, {__bss_size}",
+        "shr ecx, 2",
+        "xor eax, eax",
+        "rep stosd",
         // Call main.
         "call {main}",
         // Exit to DOS.

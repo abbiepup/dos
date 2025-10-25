@@ -11,6 +11,7 @@ name = "dos"
 version = "0.1.0"
 dependencies = [
  "bios",
+ "thiserror",
 ]
 
 [[package]]

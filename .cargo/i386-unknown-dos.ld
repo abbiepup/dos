@@ -27,8 +27,7 @@ SECTIONS {
         *(.bss .bss.*)
         *(COMMON)
         . = ALIGN(2);
-        PROVIDE(__bss_end = .);
-        PROVIDE(__bss_size = __bss_end - __bss_start);
+        PROVIDE(__bss_size = SIZEOF(.bss));
     } > RAM
 
     .heap (NOLOAD) : {

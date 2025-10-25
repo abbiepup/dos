@@ -1,16 +1,24 @@
+use crate::Error;
 use core::arch::asm;
 use core::ops::{BitOr, BitOrAssign};
+
+pub type Result<T> = core::result::Result<T, Error>;
 
 #[derive(Debug)]
 #[repr(transparent)]
 pub struct File(u16);
 
 impl File {
-    #[inline]
-    pub fn open(path: *const u8) -> Self {
+    pub fn open(path: *const u8) -> Result<Self> {
         let Self(handle);
         unsafe { asm!("int 0x21", in("ah") 0x0Fu8, in("dx") path, lateout("ax") handle, options(nostack)) }
-        Self(handle)
+
+        if !cf() {
+            Ok(Self(handle))
+        } else {
+            // We assume the DOS implementation is correct.
+            Err(unsafe { Error::new_unchecked((handle & 0xFF) as u8) })
+        }
     }
 }
 
@@ -71,4 +79,11 @@ pub fn flags(path: *const u8) -> Flags {
     let Flags(attributes);
     unsafe { asm!("int 0x21", in("ah") 0x43u8, in("al") 0x00u8, in("dx") path, lateout("al") attributes, options(nostack)) };
     Flags(attributes)
+}
+
+#[inline(always)]
+fn cf() -> bool {
+    let flags: u16;
+    unsafe { asm!("pushf", "pop {0:x}", out(reg) flags) }
+    (flags & 0x1) != 0
 }

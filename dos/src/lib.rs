@@ -94,3 +94,59 @@ impl<T> FarPtr<T> {
         (((self.segment as u32) << 4) + (self.offset as u32)) as *mut T
     }
 }
+
+#[derive(thiserror::Error, Debug)]
+#[repr(u8)]
+pub enum Error {
+    #[error("Invalid function.")]
+    InvalidFunction = 0x01,
+    #[error("File not found.")]
+    FileNotFound = 0x02,
+    #[error("Path not found.")]
+    PathNotFound = 0x03,
+    #[error("Too many open files.")]
+    TooManyOpenFiles = 0x04,
+    #[error("Access denied.")]
+    AccessDenied = 0x05,
+    #[error("Invalid handle.")]
+    InvalidHandle = 0x06,
+    #[error("Insufficient memory.")]
+    InsufficientMemory = 0x08,
+    #[error("Invalid format.")]
+    InvalidFormat = 0x0B,
+    #[error("Invalid access code.")]
+    InvalidAccessCode = 0x0C,
+    #[error("Invalid drive.")]
+    InvalidDrive = 0x0F,
+    #[error("Printer out of paper.")]
+    PrinterOutOfPaper = 0x1C,
+    #[error("Write fault.")]
+    WriteFault = 0x1D,
+    #[error("Read fault.")]
+    ReadFault = 0x1E,
+    #[error("General failure.")]
+    GeneralFailure = 0x1F,
+    #[error("Sharing violation.")]
+    SharingViolation = 0x20,
+    #[error("Lock violation.")]
+    LockViolation = 0x21,
+    #[error("Disk change invalid.")]
+    DiskChangeInvalid = 0x22,
+    #[error("Invalid sharing buffer.")]
+    InvalidSharingBuffer = 0x24,
+    #[error("Code page mismatch.")]
+    CodePageMismatch = 0x25,
+    #[error("File exists.")]
+    FileExists = 0x50,
+    #[error("Invalid password.")]
+    InvalidPassword = 0x56,
+    #[error("Invalid parameter.")]
+    InvalidParameter = 0x57,
+}
+
+impl Error {
+    #[inline(always)]
+    unsafe fn new_unchecked(value: u8) -> Self {
+        unsafe { core::mem::transmute(value) }
+    }
+}
