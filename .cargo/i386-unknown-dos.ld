@@ -9,24 +9,24 @@ SECTIONS {
     .text : {
         KEEP(*(.rt));
         *(.text .text.*)
-        . = ALIGN(2);
+        . = ALIGN(4);
     } > RAM
 
     .rodata : {
         *(.rodata .rodata.*)
-        . = ALIGN(2);
+        . = ALIGN(4);
     } > RAM
 
     .data : {
         *(.data .data.*)
-        . = ALIGN(2);
+        . = ALIGN(4);
     } > RAM
 
     .bss (NOLOAD) : {
         PROVIDE(__bss_start = .);
         *(.bss .bss.*)
         *(COMMON)
-        . = ALIGN(2);
+        . = ALIGN(4);
         PROVIDE(__bss_size = SIZEOF(.bss));
     } > RAM
 
